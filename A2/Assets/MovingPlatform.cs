@@ -5,8 +5,8 @@ using UnityEngine;
 public class MovingPlatform : MonoBehaviour {
 
 	public float originalX;
-	public float amplitude = 1f;
-	public float frequency = 1f;
+	public float amplitude = 10;
+	public float frequency = 0.5f;
 	public Rigidbody rb;
 
 

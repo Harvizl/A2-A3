@@ -5,7 +5,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour {
 
 	public float fireBallDuration = 1f;
-
+	public GameObject bullet;
 
 	void OnTriggerEnter (Collider other)
 	{
@@ -20,19 +20,19 @@ public class Projectile : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        StartCoroutine(numberOfFireballs());
+       
     }
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		
+		StartCoroutine(numberOfFireballs());
 }
 	IEnumerator numberOfFireballs (){
 		yield return new WaitForSeconds (fireBallDuration);
 		Player.shot -= 1;
 		}
-	}
+}
 
 
 
