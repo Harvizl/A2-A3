@@ -15,7 +15,7 @@ public class GameManager : Singleton<GameManager>
 
     void Awake()
     {
-        gameLength = 30;
+        gameLength = 300;
     }
     // Use this for initialization
     void Start()

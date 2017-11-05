@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {
 	public float forceConst = 1750f;
 	public float flyLift = 14;
-	public bool canShoot;
+    public bool canShoot;
 	public bool canJump;
 	public float canFly;
 	public int flyBuffDuration = 5;
@@ -16,9 +16,8 @@ public class Player : MonoBehaviour
 	public float speed;
 	public Rigidbody rb;
 	public GameObject projectile;
-	public float nextFire;
-	public float fireRate = 0.1f;
-	public float bulletSpeed = 30f;
+    public float nextFire;
+	public float fireRate = 100f;
 	public bool faceRight;
 	public bool faceLeft;
 	public bool canSprint;
@@ -26,6 +25,7 @@ public class Player : MonoBehaviour
     Vector3 relativeOffset;
     Transform player;
     public bool riding;
+
     
 	Coroutine canFlyCoroutine;
 
@@ -34,9 +34,9 @@ public class Player : MonoBehaviour
 	{
 		return Physics.Raycast (transform.position, Vector3.down, distToGround + 0.01f);
 	}
-
-	//If items or goal is touched
-	void OnTriggerEnter (Collider other)
+    
+    //If items or goal is touched
+    void OnTriggerEnter (Collider other)
 	{
 		if (other.tag == "Fly Buff")
         {
@@ -103,14 +103,43 @@ public class Player : MonoBehaviour
             canJump = false;
             rb.AddForce(0, forceConst, 0);
         }
-        if (Input.GetKeyDown(KeyCode.Space) && canSprint)
+        if (Input.GetKeyDown(KeyCode.Space) && canSprint) 
         {
-            Debug.Log("Tears of Pride!");
-            canJump = false;
-            float moveHorizontal = Input.GetAxis("Horizontal");
-            float moveVertical = Input.GetAxis("Vertical");
-            Vector3 movement = new Vector3(moveHorizontal, forceConst, moveVertical);
-            rb.AddForceAtPosition(movement, rb.position, ForceMode.Force);
+            if (faceLeft)
+            {
+                Debug.Log("Tears of Pride!");
+                rb.AddForce(Vector3.up * forceConst, ForceMode.Acceleration);
+                rb.AddForce(Vector3.left * 1000f, ForceMode.Acceleration);
+                canJump = false;
+            }
+            else if (faceRight)
+            {
+                Debug.Log("MIND BULLETS");
+                rb.AddForce(Vector3.up * forceConst, ForceMode.Acceleration);
+                rb.AddForce(Vector3.right * 1000f, ForceMode.Acceleration);
+                canJump = false;
+            }
+        }
+        //Shoot command
+        if (Input.GetKeyDown(KeyCode.W) && canShoot && shot < 2)
+        {
+            shot++;
+            //Calls Projectile Prefab
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            nextFire = Time.time + fireRate;
+            //Shoots right if facing right
+            if (faceRight)
+            {
+                Debug.Log("Shot Right");
+                projectileRb.velocity += 150f * Vector3.right;
+            }
+            //Shoots left if facing left
+            else if (faceLeft)
+            {
+                Debug.Log("Shot Left");
+                projectileRb.velocity += 150f * Vector3.left;
+            }
         }
     }
 	// Use this for initialization
@@ -177,27 +206,7 @@ public class Player : MonoBehaviour
             faceLeft = true;
             faceRight = false;
         }
-        //Shoot command
-        if (Input.GetKeyDown(KeyCode.W) && canShoot && shot < 2)
-        {
-            shot++;
-            //Calls Projectile Prefab
-            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
-            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
-            nextFire = Time.time + fireRate;
-            //Shoots right if facing right
-            if (faceRight)
-            {
-                Debug.Log("Shot Right");
-                projectileRb.velocity += 75f * Vector3.right;
-            }
-            //Shoots left if facing left
-            else if (faceLeft)
-            {
-                Debug.Log("Shot Left");
-                projectileRb.velocity += 75f * Vector3.left;
-            }
-        }
+        
     }
 	//Fly buff toggle and timer
 	//	IEnumerator canFlyTimer ()

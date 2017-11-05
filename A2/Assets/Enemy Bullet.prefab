@@ -23,9 +23,9 @@ GameObject:
   - component: {fileID: 135813461589032792}
   - component: {fileID: 23642660164805936}
   - component: {fileID: 54414525066151928}
-  - component: {fileID: 114056301162935772}
+  - component: {fileID: 114012391923959882}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: Enemy Bullet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +57,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 2a66e76a07bb141449823f178fcb1a27, type: 2}
+  - {fileID: 2100000, guid: 68692fa15e3eaca4692f69667676bfbc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,7 +98,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 104
   m_CollisionDetection: 0
---- !u!114 &114056301162935772
+--- !u!114 &114012391923959882
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -106,11 +106,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1404202870188526}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a29a44d06f1f99e44b1238ebdb656935, type: 3}
+  m_Script: {fileID: 11500000, guid: 9cbbdacc1518b754ab63b6e172b2ae9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fireBallDuration: 1
-  bullet: {fileID: 1404202870188526}
+  enemyBullet: {fileID: 1404202870188526}
 --- !u!135 &135813461589032792
 SphereCollider:
   m_ObjectHideFlags: 1
