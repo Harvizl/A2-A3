@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyProjectile : MonoBehaviour {
 
-    public float fireBallDuration = 100f;
+    public float fireBallDuration = 1f;
     public GameObject enemyBullet;
 
     // Use this for initialization
@@ -28,7 +28,12 @@ public class EnemyProjectile : MonoBehaviour {
         yield return new WaitForSeconds(fireBallDuration);
         Destroy(enemyBullet.gameObject);
         Enemy.enemyShot -= 1;
+        Enemy2.enemyShot -= 1;
     }
+
+    
+        
+    
 
 
     void OnTriggerEnter(Collider other)
@@ -38,7 +43,8 @@ public class EnemyProjectile : MonoBehaviour {
         {
             Destroy(gameObject);
             Enemy.enemyShot -= 1;
-            Time.timeScale = 0;
+            Enemy2.enemyShot -= 1;
+            //Time.timeScale = 0;
             Debug.Log("Game Over");
         }
 

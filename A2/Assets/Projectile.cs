@@ -8,19 +8,24 @@ public class Projectile : MonoBehaviour
     public float fireBallDuration = 0.5f;
     public GameObject bullet;
 
-    void OnTriggerEnter(Collider other)
+    void Awake()
+    {
+        GetComponent<GameObject>();
+    }
+
+    void OnTiggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
         {
-            other.gameObject.SetActive(false);
+            Debug.Log("Hit");
+            other.gameObject.SetActive(true);
             GameManager.instance.score = GameManager.instance.score + 50;
-            Destroy(gameObject);
             Player.shot -= 1;
         }
     }
 
     // Use this for initialization
-    void Awake()
+    void Start()
     {
 
     }

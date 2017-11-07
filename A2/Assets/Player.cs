@@ -5,34 +5,60 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-	public float forceConst = 1750f;
-	public float flyLift = 14;
+    public float forceConst = 1750f;
+    public float flyLift = 14;
     public bool canShoot;
-	public bool canJump;
-	public float canFly;
-	public int flyBuffDuration = 5;
-    private Rigidbody selfRigidbody;
+    public bool canJump;
+    public float canFly;
+    public int flyBuffDuration = 5;
     float distToGround;
-	public float speed;
-	public Rigidbody rb;
-	public GameObject projectile;
+    public float speed;
+    public Rigidbody rb;
+    public GameObject projectile;
     public float nextFire;
-	public float fireRate = 100f;
-	public bool faceRight;
-	public bool faceLeft;
-	public bool canSprint;
-	public static int shot = 0;
+    public float fireRate = 100f;
+    public bool faceRight;
+    public bool faceLeft;
+    public bool canSprint;
+    public static int shot = 0;
     Vector3 relativeOffset;
     Transform player;
     public bool riding;
 
-    
-	Coroutine canFlyCoroutine;
+    void LateUpdate()
+    {
+        while (player && riding)
+        {
+            player.transform.position = relativeOffset;
+        }
+    }
+
+    void OnCollisionEnter(Collision player)
+    {
+        if (player.transform.tag == "Platform")
+        {
+            riding = true;
+            transform.parent = player.transform;
+            relativeOffset = player.transform.position - transform.position;
+        }
+    }
+
+    void OnCollisionExit(Collision player)
+    {
+        if (player.transform.tag == "Platform")
+        {
+            riding = false;
+            transform.parent = null;
+        }
+    }
+
+
+    Coroutine canFlyCoroutine;
 
 	//Is on the ground
 	bool IsGrounded ()
 	{
-		return Physics.Raycast (transform.position, Vector3.down, distToGround + 0.01f);
+		return Physics.Raycast (transform.position, Vector3.down, distToGround);
 	}
     
     //If items or goal is touched
@@ -59,30 +85,7 @@ public class Player : MonoBehaviour
         }
  	}
 
-    void LateUpdate()
-    {
-        if (player && riding)
-        {
-            player.transform.position = this.transform.position + relativeOffset;
-        }
-    }
-
-    void OnCollisionEnter(Collision player)
-    {
-        if (player.transform.tag == "Platform")
-        {
-            transform.parent = player.transform;
-            relativeOffset = player.transform.position - this.transform.position;
-        }
-    }
-
-    void OnCollisionExit (Collision player)
-    {
-        if(player.transform.tag == "Platform")
-        {
-            transform.parent = null;
-        }
-    }
+    
 
 	void FixedUpdate ()
 	{
@@ -125,7 +128,7 @@ public class Player : MonoBehaviour
         {
             shot++;
             //Calls Projectile Prefab
-            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
             Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
             nextFire = Time.time + fireRate;
             //Shoots right if facing right
@@ -146,7 +149,6 @@ public class Player : MonoBehaviour
 	void Start ()
 	{		
 		Time.timeScale = 1;
-        selfRigidbody = GetComponent<Rigidbody>();
         distToGround = 0.5f * transform.localScale.y;
 	}
 

@@ -8,10 +8,10 @@ public class MovingPlatform : MonoBehaviour {
 	public float amplitude = 10;
 	public float frequency = 0.5f;
 	public Rigidbody rb;
+    
 
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		originalX = transform.position.x;
 		rb = GetComponent<Rigidbody> ();
 	}
