@@ -111,7 +111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireBallDuration: 1
   bullet: {fileID: 1404202870188526}
-  enemyTarget: {fileID: 0}
 --- !u!135 &135813461589032792
 SphereCollider:
   m_ObjectHideFlags: 1

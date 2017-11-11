@@ -13,16 +13,7 @@ public class Projectile : MonoBehaviour
         GetComponent<GameObject>();
     }
 
-    void OnTiggerEnter(Collider other)
-    {
-        if (other.tag == "Enemy")
-        {
-            Debug.Log("Hit");
-            other.gameObject.SetActive(true);
-            GameManager.instance.score = GameManager.instance.score + 50;
-            Player.shot -= 1;
-        }
-    }
+    
 
     // Use this for initialization
     void Start()
@@ -41,6 +32,18 @@ public class Projectile : MonoBehaviour
         yield return new WaitForSeconds(fireBallDuration);
         Destroy(bullet.gameObject);
         Player.shot -= 1;
+    }
+
+    void OnTriggerEnter (Collider other)
+    {
+        if (other.tag == "Enemy")
+        {
+            Destroy(gameObject);
+            Debug.Log("Hit");
+            other.gameObject.SetActive(false);
+            GameManager.instance.score = GameManager.instance.score + 50;
+            Player.shot -= 1;
+        }
     }
 }
 

@@ -20,12 +20,13 @@ public class EnemyProjectile : MonoBehaviour {
 
     void FixedUpdate()
     {
-    StartCoroutine(numberOfFireballs());
+        StartCoroutine(numberOfFireballs());
     }
 
     IEnumerator numberOfFireballs()
     {
         yield return new WaitForSeconds(fireBallDuration);
+        Debug.Log("Player Missed");
         Destroy(enemyBullet.gameObject);
         Enemy.enemyShot -= 1;
         Enemy2.enemyShot -= 1;
@@ -38,16 +39,12 @@ public class EnemyProjectile : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        
         if (other.tag == "Player")
         {
+            Debug.Log("Player Hit");
             Destroy(gameObject);
             Enemy.enemyShot -= 1;
             Enemy2.enemyShot -= 1;
-            //Time.timeScale = 0;
-            Debug.Log("Game Over");
         }
-
-
     }
 }

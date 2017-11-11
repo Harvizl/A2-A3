@@ -10,6 +10,7 @@ TagManager:
   - Bullet
   - Platform
   - Enemy Bullet
+  - Ground
   layers:
   - Default
   - TransparentFX
