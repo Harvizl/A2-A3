@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     public bool aimUp;
     public bool aimUpLeft;
     public bool aimUpRight;
+    public bool onTheGround;
+    public float isFalling;
     public bool canSprint;
     public bool canShoot;
     public bool canJump;
@@ -30,6 +32,43 @@ public class Player : MonoBehaviour
     bool IsGrounded()
     {
         return Physics.Raycast(transform.position, Vector3.down, distToGround);
+    }
+
+    //Game Over if you fall in a hole
+    IEnumerator DeathByFall()
+    {
+
+        yield return new WaitForSeconds(0.5f);
+        
+        if (IsGrounded() != true)
+        {
+            Debug.Log("You Fell");
+            Time.timeScale = 0;
+        }
+        
+
+        //Tried using a Raycast to detect nothing before triggering game over
+        /*RaycastHit hit;
+        {
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, 500f))
+            {
+                Debug.DrawLine(rb.position, hit.point, Color.green);
+                if (hit.collider.tag == null)
+                {
+                    Debug.Log("You Fell");
+                    Time.timeScale = 0;
+                }
+            }
+        }*/
+
+    }
+
+    //Falling counter, triggered when free falling (Level design must be smaller in height before death)
+    IEnumerator Falling()
+    {
+        yield return new WaitForSeconds(0);
+        Debug.Log("Falling");
+        isFalling += 1 * 0.5f;
     }
 
     //If items or goal is touched
@@ -59,12 +98,53 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    // Use this for initialization
+    void Start()
     {
+        Time.timeScale = 1;
+        distToGround = 0.5f * transform.localScale.y;
+        canJump = true;
+        //isFalling = 0;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //Tried to use booleans and Raycasts to start death via falling through holes
+        /*if (onTheGround != true && canFly == false)
+        {
+            if (canFly == false)
+            {
+                Debug.Log("Falling...");
+                StartCoroutine(DeathByFall());
+            }
+        }
+        RaycastHit hit;
+        {
+            if (Physics.Raycast(rb.position, Vector3.down, out hit, distToGround))
+            {
+                if (hit.collider.tag == "Null")
+                {
+                    StartCoroutine(Falling());
+                }
+            }
+        }*/
+
+        //Float trigger for death via falling through holes
+        if (onTheGround != true && canFly == false)
+        {
+            StartCoroutine(Falling());
+            if (isFalling > 100)
+            {
+                StartCoroutine(DeathByFall());
+            }
+        }
+
         //Jump boolean
         if (canJump)
         {
             canJump = false;
+            onTheGround = false;
         }
         if (canJump == false)
         {
@@ -74,47 +154,10 @@ public class Player : MonoBehaviour
         if (IsGrounded())
         {
             canJump = true;
+            onTheGround = true;
+            isFalling = 0;
         }
 
-        //Fly command
-        if (canFly)
-        {
-            if (flyTimer > 0f && Input.GetKey(KeyCode.Space))
-            {
-                Debug.Log("Mom, I'm flying!");
-                rb.AddForce(0, flyLift, 0);
-            }
-            if (Input.GetKey(KeyCode.A) && flyTimer > 0)
-            {
-                //rb.AddForce (Vector3.left * 500f);
-                rb.position += 10 * Time.deltaTime * Vector3.left;
-                Debug.Log("Flying Left");
-            }
-            if (Input.GetKey(KeyCode.D) && flyTimer > 0)
-            {
-                //rb.AddForce (Vector3.right * 500f);
-                rb.position += 10 * Time.deltaTime * Vector3.right;
-                Debug.Log("Flying Right");
-            }
-        }
-        if (canFly && IsGrounded())
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-                rb.AddForce(0, jumpForce, 0);
-        }
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-        Time.timeScale = 1;
-        distToGround = 0.5f * transform.localScale.y;
-        canJump = true;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
         //Flytimer constant countdown
         flyTimer -= Time.deltaTime;
         if (flyTimer < 0)
@@ -147,6 +190,7 @@ public class Player : MonoBehaviour
             canJump = true;
             rb.AddForce(0, jumpForce, 0);
         }
+        //Move right while in the air (no sprint)
         if (Input.GetKey(KeyCode.D) && canJump == false)
         {
             //Debug.Log("Falling Right");
@@ -154,6 +198,7 @@ public class Player : MonoBehaviour
             faceRight = true;
             faceLeft = false;
         }
+        //Move Left in the air (no sprint)
         if (Input.GetKey(KeyCode.A) && canJump == false)
         {
             //Debug.Log("Falling Left");
@@ -161,11 +206,13 @@ public class Player : MonoBehaviour
             faceRight = false;
             faceLeft = true;
         }
+        //Sprint Jump power (running right)
         if (Input.GetKeyDown(KeyCode.Space) && Input.GetKey(KeyCode.D) && canSprint)
         {
             //Debug.Log("Run Jump Right");
             rb.AddForce(230, 0, 0);
         }
+        //Sprint Jump power (running left)
         if (Input.GetKeyDown(KeyCode.Space) && Input.GetKey(KeyCode.A) && canSprint)
         {
             //Debug.Log("Run Jump Left");
@@ -203,18 +250,21 @@ public class Player : MonoBehaviour
             faceLeft = true;
             faceRight = false;
         }
+        //Hold to aim up
         if (Input.GetKey(KeyCode.W))
         {
             aimUp = true;
         }
         else
             aimUp = false;
+        //Hold to aim up-right
         if (Input.GetKey(KeyCode.E))
         {
             aimUpRight = true;
         }
         else
             aimUpRight = false;
+        //Hold to aim up-left
         if (Input.GetKey(KeyCode.Q))
         {
             aimUpLeft = true;
@@ -229,21 +279,23 @@ public class Player : MonoBehaviour
             GameObject projectileInstance = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
             Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
             nextFire = Time.time + fireRate;
-            //Aims up
+            //Shoots up
             if (aimUp)
             {
-                Debug.Log("Shot Up");
+                //Debug.Log("Shot Up");
                 projectileRb.velocity += 150f * Vector3.up;
             }
+            //Shoots up-right
             else if (aimUpRight)
             {
-                Debug.Log("Shot Up Right");
+                //Debug.Log("Shot Up Right");
                 projectileRb.velocity += 150f * Vector3.up;
                 projectileRb.velocity += 150f * Vector3.right;
             }
+            //Shoots up-left
             else if (aimUpLeft)
             {
-                Debug.Log("Shot Up Left");
+                //Debug.Log("Shot Up Left");
                 projectileRb.velocity += 150f * Vector3.up;
                 projectileRb.velocity += 150f * Vector3.left;
             }
@@ -259,7 +311,38 @@ public class Player : MonoBehaviour
                 //Debug.Log("Shot Left");
                 projectileRb.velocity += 150f * Vector3.left;
             }
-            
+
+        }
+    }
+
+    void FixedUpdate()
+    {
+        //Fly command
+        if (canFly)
+        {
+            if (flyTimer > 0f && Input.GetKey(KeyCode.Space))
+            {
+                Debug.Log("Mom, I'm flying!");
+                rb.AddForce(0, flyLift, 0);
+            }
+            if (Input.GetKey(KeyCode.A) && flyTimer > 0)
+            {
+                //rb.AddForce (Vector3.left * 500f);
+                rb.position += 10 * Time.deltaTime * Vector3.left;
+                Debug.Log("Flying Left");
+            }
+            if (Input.GetKey(KeyCode.D) && flyTimer > 0)
+            {
+                //rb.AddForce (Vector3.right * 500f);
+                rb.position += 10 * Time.deltaTime * Vector3.right;
+                Debug.Log("Flying Right");
+            }
+        }
+        //Normal jump while Fly Buff is active and grounded
+        if (canFly && IsGrounded())
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+                rb.AddForce(0, jumpForce, 0);
         }
     }
 }

@@ -42,7 +42,15 @@ public class Enemy : MonoBehaviour
 
          RaycastHit hit;
          {
-            if (Physics.Raycast(rb.position, -Vector3.left, out hit, 40f))
+            if (Physics.Raycast(rb.position, Vector3.up, out hit, 40f))
+            {
+                Debug.DrawLine(rb.position, hit.point, Color.green);
+                if (hit.collider.tag == "Player")
+                {
+                    StartCoroutine(enemyShootUp());
+                }
+            }
+            else if (Physics.Raycast(rb.position, -Vector3.left, out hit, 40f))
             {
                 Debug.DrawLine(rb.position, hit.point, Color.red);
                 if (hit.collider.tag == "Player")
@@ -70,6 +78,35 @@ public class Enemy : MonoBehaviour
 
     }
 
+    IEnumerator enemyShootUp()
+    {
+        if (enemyShot < 1)
+        {
+            Debug.Log("UP!");
+            enemyShot++;
+            yield return new WaitForSeconds(1);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            nextFire = Time.time + fireRate;
+            Debug.Log("Shot Right");
+            projectileRb.velocity += 150f * Vector3.up;
+        }
+    }
+
+    IEnumerator enemyShootRight()
+    {
+        if (enemyShot < 1)
+        {
+            Debug.Log("Rawr");
+            enemyShot++;
+            yield return new WaitForSeconds(1);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            nextFire = Time.time + fireRate;
+            Debug.Log("Shot Right");
+            projectileRb.velocity += 150f * Vector3.right;
+        }
+    }
         IEnumerator enemyShootLeft()
     {
         if (enemyShot < 1)
@@ -84,21 +121,9 @@ public class Enemy : MonoBehaviour
             projectileRb.velocity += 150f * Vector3.left;
         }
         
-    }
+    
 
-        IEnumerator enemyShootRight()
-    {
-        if (enemyShot < 1)
-        {
-            Debug.Log("Rawr");
-            enemyShot++;
-            yield return new WaitForSeconds(1);
-            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
-            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
-            nextFire = Time.time + fireRate;
-            Debug.Log("Shot Right");
-            projectileRb.velocity += 150f * Vector3.right;
-        }
+        
     }
 
     
