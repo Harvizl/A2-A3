@@ -11,6 +11,8 @@ TagManager:
   - Platform
   - Enemy Bullet
   - Ground
+  - Death Plane
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -12,8 +12,6 @@ public class Player : MonoBehaviour
     public bool aimUp;
     public bool aimUpLeft;
     public bool aimUpRight;
-    public bool onTheGround;
-    public float isFalling;
     public bool canSprint;
     public bool canShoot;
     public bool canJump;
@@ -21,55 +19,26 @@ public class Player : MonoBehaviour
     public float flyTimer;
     public int flyBuffDuration = 5;
     float distToGround;
+    float distToSide;
     public float speed;
     public Rigidbody rb;
     public GameObject projectile;
     public float nextFire;
     public float fireRate = 100f;
     public static int shot = 0;
+    
+    
 
     //Is on the ground
     bool IsGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, distToGround);
+        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
     }
 
     //Game Over if you fall in a hole
-    IEnumerator DeathByFall()
-    {
+   
 
-        yield return new WaitForSeconds(0.5f);
-        
-        if (IsGrounded() != true)
-        {
-            Debug.Log("You Fell");
-            Time.timeScale = 0;
-        }
-        
-
-        //Tried using a Raycast to detect nothing before triggering game over
-        /*RaycastHit hit;
-        {
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, 500f))
-            {
-                Debug.DrawLine(rb.position, hit.point, Color.green);
-                if (hit.collider.tag == null)
-                {
-                    Debug.Log("You Fell");
-                    Time.timeScale = 0;
-                }
-            }
-        }*/
-
-    }
-
-    //Falling counter, triggered when free falling (Level design must be smaller in height before death)
-    IEnumerator Falling()
-    {
-        yield return new WaitForSeconds(0);
-        Debug.Log("Falling");
-        isFalling += 1 * 0.5f;
-    }
+    
 
     //If items or goal is touched
     void OnTriggerEnter(Collider other)
@@ -96,6 +65,19 @@ public class Player : MonoBehaviour
             GameManager.instance.score += 500;
             SceneManager.LoadScene(2);
         }
+
+        
+        
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Death Plane")
+        {
+            print("You Fell");
+            Time.timeScale = 0;
+        }
+
     }
 
     // Use this for initialization
@@ -103,61 +85,23 @@ public class Player : MonoBehaviour
     {
         Time.timeScale = 1;
         distToGround = 0.5f * transform.localScale.y;
-        canJump = true;
-        //isFalling = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Tried to use booleans and Raycasts to start death via falling through holes
-        /*if (onTheGround != true && canFly == false)
-        {
-            if (canFly == false)
-            {
-                Debug.Log("Falling...");
-                StartCoroutine(DeathByFall());
-            }
-        }
-        RaycastHit hit;
-        {
-            if (Physics.Raycast(rb.position, Vector3.down, out hit, distToGround))
-            {
-                if (hit.collider.tag == "Null")
-                {
-                    StartCoroutine(Falling());
-                }
-            }
-        }*/
-
-        //Float trigger for death via falling through holes
-        if (onTheGround != true && canFly == false)
-        {
-            StartCoroutine(Falling());
-            if (isFalling > 100)
-            {
-                StartCoroutine(DeathByFall());
-            }
-        }
-
-        //Jump boolean
-        if (canJump)
-        {
-            canJump = false;
-            onTheGround = false;
-        }
-        if (canJump == false)
+                
+        if (IsGrounded() == false)
         {
             //Gravity
             rb.AddForce(0, -60f, 0);
+
         }
         if (IsGrounded())
         {
             canJump = true;
-            onTheGround = true;
-            isFalling = 0;
         }
-
+       
         //Flytimer constant countdown
         flyTimer -= Time.deltaTime;
         if (flyTimer < 0)
@@ -184,12 +128,6 @@ public class Player : MonoBehaviour
             rb.position += 15 * Time.deltaTime * Vector3.down;
         }
 
-        //Jump command
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
-        {
-            canJump = true;
-            rb.AddForce(0, jumpForce, 0);
-        }
         //Move right while in the air (no sprint)
         if (Input.GetKey(KeyCode.D) && canJump == false)
         {
@@ -317,6 +255,18 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+
+        //Jump command
+        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
+        {
+            rb.AddForce(0, jumpForce, 0);
+            canJump = false;
+        }
+
+        //Prevents sticking to wall
+        float move = Input.GetAxis("Horizontal");
+        if (!IsGrounded() && Mathf.Abs(move) > 0.01f) return;
+
         //Fly command
         if (canFly)
         {
