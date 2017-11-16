@@ -109,9 +109,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29a44d06f1f99e44b1238ebdb656935, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireBallDuration: 2
+  fireBallDuration: 1
   bullet: {fileID: 1404202870188526}
-  enemyTarget: {fileID: 0}
 --- !u!135 &135813461589032792
 SphereCollider:
   m_ObjectHideFlags: 1
