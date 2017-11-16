@@ -3,42 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MovingCamera : MonoBehaviour
-{
+public class MovingCamera : MonoBehaviour {
 
-    public GameObject player;
-    private Vector3 offset;
+	public GameObject player;
+	private Vector3 offset;
     
 
 
+   
 
-
-
+       
 
     void Awake()
     {
-       
+        
     }
 
     // Use this for initialization
-    void Start()
-    {
-        offset = transform.position - player.transform.position;
-       
-    }
+    void Start ()
+	{
+		offset = transform.position - player.transform.position;
+	}
 
     // Update is called once per frame
     void Update()
-    { 
-
-    }
-
-    void LateUpdate()
     {
-        //transform.position = player.transform.position + offset;
-        transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 2f * Time.time);
+        
     }
 
-    
-
+    void LateUpdate ()
+	{
+		transform.position = player.transform.position + offset;
+	}
 }

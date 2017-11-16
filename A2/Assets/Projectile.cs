@@ -34,13 +34,13 @@ public class Projectile : MonoBehaviour
         Player.shot -= 1;
     }
 
-    void OnTriggerEnter (Collider other)
+    void OnTiggerEnter(Collider other)
     {
         if (other.tag == "Enemy")
         {
             Destroy(gameObject);
             Debug.Log("Hit");
-            other.gameObject.SetActive(false);
+            other.gameObject.SetActive(true);
             GameManager.instance.score = GameManager.instance.score + 50;
             Player.shot -= 1;
         }

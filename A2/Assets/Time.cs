@@ -10,7 +10,9 @@ public class time : MonoBehaviour {
     private float roundedSeconds;
     private string txtSeconds;
     private string txtMinutes;
-    
+
+    bool stopTimer = false;
+
     public float timer;
     public float gameLength;
 

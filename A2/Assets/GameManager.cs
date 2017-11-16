@@ -13,11 +13,15 @@ public class GameManager : Singleton<GameManager>
     public Text scoreText;
     public int score;
 
+    void Awake()
+    {
+        gameLength = 300;
+    }
     // Use this for initialization
     void Start()
     {
         InvokeRepeating("Updatescore", 0, 1);
-        gameLength = 300;
+        
     }
     void Updatescore()
     {

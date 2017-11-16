@@ -17,55 +17,43 @@ public class Enemy2 : MonoBehaviour
     public GameObject playerTarget;
     public SphereCollider col;
 
-    public Transform player;
-    public float playerDistance;
-    public bool playerSpotted;
-    public bool patrolling;
-    public bool backToPatrolling;
-    Vector3 originalPosition;
-
 
     void Awake()
     {
         playerTarget = GameObject.FindGameObjectWithTag("Player");
-        Vector3 originalPosition = rb.transform.position;
+
     }
+
     void OnTriggerStay(Collider other)
     {
-
+        if (other.gameObject.tag == "Player")
+        {
+            StartCoroutine(enemyAttack());
+        }
     }
-
-    void OnTriggerExit(Collider other)
-    {
-        
-    }
-
     IEnumerator enemyAttack()
     {
         yield return new WaitForSeconds(0);
         while (enemyShot < 1)
         {
             Debug.Log("Player in Sight");
-            enemyShot++;
             Vector3 direction = playerTarget.transform.position - transform.position;
+            enemyShot = 1;
             GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
             Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
-            projectileRb.velocity = Vector3.Lerp(playerTarget.transform.position, direction, 1f * Time.time);
+			projectileRb.velocity = Vector3.Lerp(playerTarget.transform.position, direction, 1f * Time.time);
             //Stuff happens that makes the enemy chase the player
         }
     }
-
-    IEnumerator chasePlayer()
+    /*bool EnemySightsLeft()
     {
-        yield return new WaitForSeconds(0);
-        rb.velocity = Vector3.Lerp(player.transform.position, playerTarget.transform.position - transform.position, 1f * Time.time);
+        return Physics.Raycast(transform.position, Vector3.left, 40f);
     }
 
-    IEnumerator patrolMode()
+    bool EnemySightsRight()
     {
-        yield return new WaitForSeconds(0);
-        rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), originalY + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), transform.position.z));
-    }
+        return Physics.Raycast(transform.position, Vector3.right, 40f);
+    }*/
 
     /* void OnCollisionEnter(Collision other)
      {
@@ -83,49 +71,49 @@ public class Enemy2 : MonoBehaviour
         originalX = transform.position.x;
         originalY = transform.position.y;
         rb = GetComponent<Rigidbody>();
-        patrolling = true;
-        playerSpotted = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if (patrolling)
-        {
-            StartCoroutine(patrolMode());
-        }
-
-        if (playerSpotted)
-        {
-            patrolling = false;
-            StartCoroutine(chasePlayer());
-            StartCoroutine(enemyAttack());
-        }
-
-        RaycastHit hit;
-        {
-            if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right, out hit, 200f))
-            {
-                Debug.DrawLine(rb.position, hit.point);
-                if (hit.collider.tag == "Player")
-                {
-                    //print("Found an object - distance: " + hit.distance);
-
-                    transform.LookAt(player);
-                    playerSpotted = true;
-                }
-                
-
-            }
-        }
+        rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), originalY + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), transform.position.z));
     }
 
-
-
-    void FixedUpdate()
+    /*void FixedUpdate()
     {
-
+        StartCoroutine(enemyShootLeft());
+        StartCoroutine(enemyShootRight());
 
     }
+
+    IEnumerator enemyShootLeft()
+    {
+        if (EnemySightsLeft() && enemyShot < 1)
+        {
+            Debug.Log("Meow");
+            enemyShot++;
+            yield return new WaitForSeconds(1);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            nextFire = Time.time + fireRate;
+            Debug.Log("Shot Left");
+            projectileRb.velocity += 150f * Vector3.left;
+        }
+
+    }
+
+    IEnumerator enemyShootRight()
+    {
+        if (EnemySightsRight() && enemyShot < 1)
+        {
+            Debug.Log("Rawr");
+            enemyShot++;
+            yield return new WaitForSeconds(1);
+            GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
+            Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            nextFire = Time.time + fireRate;
+            Debug.Log("Shot Right");
+            projectileRb.velocity += 150f * Vector3.right;
+        }
+    }*/
 }
