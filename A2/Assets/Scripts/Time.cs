@@ -32,7 +32,7 @@ public class time : MonoBehaviour {
             Debug.Log("Time's up");
             //Resets timer
             timer = gameLength;
-            Application.LoadLevel("0");
+            //Application.LoadLevel("0");
         }
         //Display timer
         roundedSeconds = Mathf.CeilToInt(timer);

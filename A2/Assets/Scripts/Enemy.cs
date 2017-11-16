@@ -9,13 +9,26 @@ public class Enemy : MonoBehaviour
     public float originalX;
     public float amplitude = 5f;
     public float frequency = 1f;
+
+//	public float speed = 10f;
+//	public float rotationSpeed = 100f;
+//	public float translation = Input.GetAxis ("Verticle") * speed;
+//	public float rotation = Input.GetAxis ("Horizontol") * rotationSpeed;
+
     public Rigidbody rb;
     public GameObject projectile;
     public float nextFire;
     public float fireRate = 0.05f;
     public static int enemyShot = 0;
-    
-    
+    float distToGround;
+
+    //Is on the ground
+    bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+    }
+
+
     void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.tag == "Player")
@@ -32,13 +45,18 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         originalX = transform.position.x;
-        rb = GetComponent<Rigidbody>();
+        distToGround = 0.5f * transform.localScale.y;
     }
 
     //Update is called once per frame
     void Update()
     {
-        rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), transform.position.y, transform.position.z));
+		rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time),transform.position.y, transform.position.z));
+
+//		translation *= Time.deltaTime;
+//		rotation *= Time.deltaTime;
+//		transform.Translate (rotation, 0, 0);
+//		transform.Rotate (0, rotation, 0);
 
          RaycastHit hit;
          {
@@ -66,6 +84,11 @@ public class Enemy : MonoBehaviour
                     StartCoroutine(enemyShootLeft());
                 }
             }
+        }
+        if (IsGrounded() == false)
+        {
+            //Gravity
+			rb.AddForce (0, -500, 0);
 
         }
     }

@@ -30,6 +30,7 @@ public class Enemy2 : MonoBehaviour
         playerTarget = GameObject.FindGameObjectWithTag("Player");
         Vector3 originalPosition = rb.transform.position;
     }
+
     void OnTriggerStay(Collider other)
     {
 
@@ -67,7 +68,7 @@ public class Enemy2 : MonoBehaviour
         rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), originalY + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), transform.position.z));
     }
 
-    /* void OnCollisionEnter(Collision other)
+    void OnCollisionEnter(Collision other)
      {
          if (other.gameObject.tag == "Player")
          {
@@ -75,7 +76,7 @@ public class Enemy2 : MonoBehaviour
              Debug.Log("Game Over");
              //SceneManager.LoadScene(4);
          }
-     }*/
+     }
 
     // Use this for initialization
     void Start()
@@ -85,6 +86,8 @@ public class Enemy2 : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         patrolling = true;
         playerSpotted = false;
+
+        
     }
 
     // Update is called once per frame
@@ -105,17 +108,18 @@ public class Enemy2 : MonoBehaviour
 
         RaycastHit hit;
         {
-            if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right, out hit, 200f))
+            if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right + -Vector3.left + -Vector3.down, out hit, 200f))
             {
-                Debug.DrawLine(rb.position, hit.point);
+                print("ray");
+                Debug.DrawLine(rb.position, hit.point, Color.red);
                 if (hit.collider.tag == "Player")
                 {
-                    //print("Found an object - distance: " + hit.distance);
+                    print("Found an object - distance: " + hit.distance);
 
                     transform.LookAt(player);
                     playerSpotted = true;
                 }
-                
+
 
             }
         }

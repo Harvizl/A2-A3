@@ -6,7 +6,7 @@ public class Menu : MonoBehaviour {
 
 	public void Restart()
 	{
-		Application.LoadLevel (1);
+		//Application.LoadLevel (1);
 	}
 
 	public void Quit()

@@ -8,12 +8,15 @@ public class MovingCamera : MonoBehaviour
 
     public GameObject player;
     private Vector3 offset;
-    
+    public Rigidbody rb;
 
-
-
-
-
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Death Plane")
+        {
+            rb.constraints = RigidbodyConstraints.FreezePositionY;
+        }
+    }
 
     void Awake()
     {
@@ -24,19 +27,18 @@ public class MovingCamera : MonoBehaviour
     void Start()
     {
         offset = transform.position - player.transform.position;
-       
+        
     }
 
     // Update is called once per frame
     void Update()
-    { 
-
+    {
+        
     }
 
     void LateUpdate()
     {
-        //transform.position = player.transform.position + offset;
-        transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 2f * Time.time);
+        transform.position = player.transform.position + offset;
     }
 
     

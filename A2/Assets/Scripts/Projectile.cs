@@ -5,7 +5,7 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
 
-    public float fireBallDuration = 0.5f;
+    public float fireBallDuration = 2f;
     public GameObject bullet;
 
     void Awake()
@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour
     {
         yield return new WaitForSeconds(fireBallDuration);
         Destroy(bullet.gameObject);
-        Player.shot -= 1;
+        Player2.shot -= 1;
     }
 
     void OnTriggerEnter (Collider other)
@@ -42,7 +42,7 @@ public class Projectile : MonoBehaviour
             Debug.Log("Hit");
             other.gameObject.SetActive(false);
             GameManager.instance.score = GameManager.instance.score + 50;
-            Player.shot -= 1;
+            Player2.shot -= 1;
         }
     }
 }

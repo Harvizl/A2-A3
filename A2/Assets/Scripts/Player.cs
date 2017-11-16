@@ -5,16 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    public float jumpForce = 1750f;
+    public float jumpForce = 1200f;
     public float flyLift = 100f;
     public bool faceLeft;
     public bool faceRight;
-    public bool aimUp;
-    public bool aimUpLeft;
-    public bool aimUpRight;
-    public bool canSprint;
-    public bool canShoot;
-    public bool canJump;
+	public bool aimUp;
+	public bool aimUpLeft;
+	public bool aimUpRight;
+	public bool canShoot;
+	public bool canSprint;
+	//public bool canJump;
     public bool canFly;
     public float flyTimer;
     public int flyBuffDuration = 5;
@@ -36,7 +36,11 @@ public class Player : MonoBehaviour
     }
 
     //Game Over if you fall in a hole
-   
+   IEnumerator DeathByFall()
+    {
+        yield return new WaitForSeconds(2);
+        Time.timeScale = 0;
+    }
 
     
 
@@ -65,18 +69,23 @@ public class Player : MonoBehaviour
             GameManager.instance.score += 500;
             SceneManager.LoadScene(2);
         }
-
-        
-        
+        if (other.tag == "Death Plane")
+        {
+            print("You Fell");
+            StartCoroutine(DeathByFall());
+        }
+        if (other.tag == "Ground")
+        {
+            rb.constraints = RigidbodyConstraints.FreezePositionY;
+        }
+        else
+            rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY |
+                RigidbodyConstraints.FreezeRotationZ;
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Death Plane")
-        {
-            print("You Fell");
-            Time.timeScale = 0;
-        }
+        
 
     }
 
@@ -90,18 +99,17 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-                
-        if (IsGrounded() == false)
-        {
-            //Gravity
-            rb.AddForce(0, -60f, 0);
+		//Gravity
+		rb.AddForce(0, -60f, 0);
 
-        }
-        if (IsGrounded())
+		bool isGrounded = IsGrounded();
+		
+        //Jump command
+		if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            canJump = true;
+            rb.AddForce(0, jumpForce, 0);
         }
-       
+
         //Flytimer constant countdown
         flyTimer -= Time.deltaTime;
         if (flyTimer < 0)
@@ -114,7 +122,7 @@ public class Player : MonoBehaviour
             Application.Quit();
         }
         //Sprint toggle
-        if (Input.GetKey(KeyCode.LeftShift) && IsGrounded())
+		if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
             canSprint = true;
         }
@@ -129,7 +137,7 @@ public class Player : MonoBehaviour
         }
 
         //Move right while in the air (no sprint)
-        if (Input.GetKey(KeyCode.D) && canJump == false)
+		if (Input.GetKey(KeyCode.D))
         {
             //Debug.Log("Falling Right");
             transform.Translate(20 * Time.deltaTime * Vector3.right);
@@ -137,7 +145,7 @@ public class Player : MonoBehaviour
             faceLeft = false;
         }
         //Move Left in the air (no sprint)
-        if (Input.GetKey(KeyCode.A) && canJump == false)
+        if (Input.GetKey(KeyCode.A))
         {
             //Debug.Log("Falling Left");
             transform.Translate(20 * Time.deltaTime * Vector3.left);
@@ -157,7 +165,7 @@ public class Player : MonoBehaviour
             rb.AddForce(-230, 0, 0);
         }
         //Move Right
-        if (Input.GetKey(KeyCode.D) && IsGrounded())
+		if (Input.GetKey(KeyCode.D) && isGrounded)
         {
             //transform.Translate (15 * Time.deltaTime * Vector3.right);
             rb.position += 15 * Time.deltaTime * Vector3.right;
@@ -165,7 +173,7 @@ public class Player : MonoBehaviour
             faceLeft = false;
         }
         //Sprint Right
-        if (Input.GetKey(KeyCode.D) && canSprint && IsGrounded())
+		if (Input.GetKey(KeyCode.D) && canSprint && isGrounded)
         {
             //transform.Translate (20 * Time.deltaTime * Vector3.right);	
             rb.position += 20 * Time.deltaTime * Vector3.right;
@@ -173,7 +181,7 @@ public class Player : MonoBehaviour
             faceLeft = false;
         }
         //Move Left
-        if (Input.GetKey(KeyCode.A) && IsGrounded())
+		if (Input.GetKey(KeyCode.A) && isGrounded)
         {
             //transform.Translate (15 * Time.deltaTime * Vector3.left);
             rb.position += 15 * Time.deltaTime * Vector3.left;
@@ -181,7 +189,7 @@ public class Player : MonoBehaviour
             faceRight = false;
         }
         //Sprint Left
-        if (Input.GetKey(KeyCode.A) && canSprint && IsGrounded())
+		if (Input.GetKey(KeyCode.A) && canSprint && isGrounded)
         {
             //transform.Translate (20 * Time.deltaTime * Vector3.left);
             rb.position += 20 * Time.deltaTime * Vector3.left;
@@ -255,17 +263,11 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-
-        //Jump command
-        if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
-        {
-            rb.AddForce(0, jumpForce, 0);
-            canJump = false;
-        }
+		bool isGrounded = IsGrounded();
 
         //Prevents sticking to wall
         float move = Input.GetAxis("Horizontal");
-        if (!IsGrounded() && Mathf.Abs(move) > 0.01f) return;
+		if (!isGrounded && Mathf.Abs(move) > 0.01f) return;
 
         //Fly command
         if (canFly)
@@ -289,7 +291,7 @@ public class Player : MonoBehaviour
             }
         }
         //Normal jump while Fly Buff is active and grounded
-        if (canFly && IsGrounded())
+		if (canFly && isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.Space))
                 rb.AddForce(0, jumpForce, 0);
