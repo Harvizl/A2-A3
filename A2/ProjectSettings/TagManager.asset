@@ -13,6 +13,8 @@ TagManager:
   - Ground
   - Death Plane
   - Wall
+  - Key
+  - Goal
   layers:
   - Default
   - TransparentFX

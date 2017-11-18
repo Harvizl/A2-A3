@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Enemy2 : MonoBehaviour
 {
-
+    
     public float originalX;
     public float originalY;
     public float amplitude = 5f;
@@ -22,6 +22,7 @@ public class Enemy2 : MonoBehaviour
     public bool patrolling;
     public bool backToPatrolling;
     Vector3 originalPosition;
+    Vector3 playerPosition;
 
     public bool scanning;
 
@@ -43,7 +44,7 @@ public class Enemy2 : MonoBehaviour
 
     void EnemyAttack()
     {
-        while (enemyShot < 1)
+        if (enemyShot < 1)
         {
             Debug.Log("Player in Sight");
             enemyShot++;
@@ -51,10 +52,11 @@ public class Enemy2 : MonoBehaviour
             GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
             //Declaring bullet's RB
             Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
+            playerPosition = playerTarget.transform.position - transform.position;
             //Direction of bullet
-            projectileRb.velocity += 10f * Vector3.Lerp(projectileRb.transform.position, playerTarget.transform.position - transform.position, 1f * Time.time);
-
+            projectileRb.velocity = Vector3.Lerp(projectileRb.transform.position, playerPosition, 1f);
             //Stuff happens that makes the enemy chase the player
+            Debug.Log("Player Missed");
         }
     }
 
@@ -79,17 +81,16 @@ public class Enemy2 : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         patrolling = true;
         playerSpotted = false;
+
+        
+      
     }
 
     // Update is called once per frame
     void Update()
     {
     }
-
-    void Detector()
-    {
-        
-    }
+    
 
 
     void FixedUpdate()
@@ -105,16 +106,15 @@ public class Enemy2 : MonoBehaviour
             scanning = false;
             patrolling = false;
             ChasePlayer();
-            EnemyAttack();
+          //EnemyAttack();
         }
 
         if (scanning)
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right + -Vector3.left + -Vector3.down, out hit, 200f))
+            if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right, out hit, 200f))
             {
-                print("ray");
                 Debug.DrawLine(rb.position, hit.point, Color.red);
                 if (hit.collider.tag == "Player")
                 {

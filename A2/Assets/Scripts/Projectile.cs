@@ -24,9 +24,15 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        StartCoroutine(numberOfFireballs());
+        
     }
-    
+
+    void FixedUpdate()
+    {
+        StartCoroutine(numberOfFireballs());
+        
+    }
+
     IEnumerator numberOfFireballs()
     {
         yield return new WaitForSeconds(fireBallDuration);
@@ -42,6 +48,13 @@ public class Projectile : MonoBehaviour
             Debug.Log("Hit");
             other.gameObject.SetActive(false);
             GameManager.instance.score = GameManager.instance.score + 50;
+            Player2.shot -= 1;
+        }
+        if (other.tag == "Wall")
+        {
+            Destroy(gameObject);
+            other.gameObject.SetActive(false);
+            GameManager.instance.score = GameManager.instance.score + 10;
             Player2.shot -= 1;
         }
     }

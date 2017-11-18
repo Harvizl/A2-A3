@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyProjectile : MonoBehaviour {
 
-    public float fireBallDuration = 2f;
+    
     public GameObject enemyBullet;
 
     // Use this for initialization
@@ -23,15 +23,15 @@ public class EnemyProjectile : MonoBehaviour {
         NumberOfFireballs();
     }
 
-    void NumberOfFireballs()
+     void NumberOfFireballs()
     {
-        new WaitForSeconds(fireBallDuration);
         Debug.Log("Player Missed");
-        Destroy(enemyBullet.gameObject);
+        Destroy(gameObject, 2);
         Enemy.enemyShot -= 1;
         Enemy2.enemyShot -= 1;
     }
 
+   
     
         
     
@@ -41,9 +41,8 @@ public class EnemyProjectile : MonoBehaviour {
     {
         if (other.tag == "Player")
         {
+            Destroy(gameObject, 0);
             Debug.Log("Player Hit");
-            Destroy(gameObject);
-            new WaitForSeconds(2);
             Enemy.enemyShot -= 1;
             Enemy2.enemyShot -= 1;
         }

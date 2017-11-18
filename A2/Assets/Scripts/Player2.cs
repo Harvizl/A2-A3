@@ -5,13 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class Player2 : MonoBehaviour
 {
-
     public bool faceLeft;
     public bool faceRight;
     public bool aimUp;
     public bool aimUpLeft;
     public bool aimUpRight;
     public bool canFly;
+    public bool flying;
     public bool canJump;
     public bool shoot;
     public bool canShoot;
@@ -25,16 +25,14 @@ public class Player2 : MonoBehaviour
     public float flyBuffDuration = 5;
     public float jumpForce = 1200f;
     public float flyTimer;
-    public float nextFire;
-    public float fireRate = 100f;
-    public float maxSpeed = 5f;
-    public float maxWalkSpeed = 1f;
-    public float gravity = 30f;
+    public float maxSpeed = 30f;
+    public float maxWalkSpeed = 20f;
     public float slowdown = 2f;
 
 
     float distToGround;
     public Rigidbody rb;
+    public GameObject lift;
     public GameObject projectile;
     public GameObject gameObjectEnemy2;
     //public Component Enemy2;
@@ -58,8 +56,13 @@ public class Player2 : MonoBehaviour
 
     void SpawnEnemy2()
     {
-        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(336, 18, 0), Quaternion.identity);
+        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(345, 60, 0), Quaternion.identity);
         SpawnEnemy2.GetComponent<Enemy2>().scanning = true;
+    }
+
+    void SpawnLift()
+    {
+        GameObject SpawnLift = Instantiate(lift, new Vector3(76, 50, 0), Quaternion.identity);
     }
 
     void OnCollisionEnter(Collision other)
@@ -98,6 +101,7 @@ public class Player2 : MonoBehaviour
         {
             print("You Fell");
             StartCoroutine(DeathByFall());
+            
         }
         if (other.tag == "Ground")
         {
@@ -113,11 +117,19 @@ public class Player2 : MonoBehaviour
             print("Game Over");
             //Load game over screen
         }
+
+        if (other.gameObject.tag == "Key")
+        {
+            GameManager.instance.score = GameManager.instance.score + 50;
+            SpawnLift();
+            other.gameObject.SetActive(false);
+        }
     }
 
     // Use this for initialization
     void Start()
     {
+        canShoot = false;
         Time.timeScale = 1;
         distToGround = 0.5f * transform.localScale.y;
     }
@@ -134,9 +146,6 @@ public class Player2 : MonoBehaviour
         canSprintRight = false;
         walkLeft = false;
         walkRight = false;
-        canShoot = false;
-
-        
 
         //Speed Limit
         if (Input.GetKey(KeyCode.A))
@@ -165,13 +174,23 @@ public class Player2 : MonoBehaviour
             canJump = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (Input.GetKeyDown(KeyCode.KeypadEnter) && canShoot)
         {
             shoot = true;
+            shot++;
         }
         else
         {
             shoot = false;
+        }
+        
+        if(Input.GetKey(KeyCode.Space) && canFly)
+        {
+            flying = true;
+        }
+        else
+        {
+            flying = false;
         }
 
     }
@@ -183,7 +202,7 @@ public class Player2 : MonoBehaviour
         //Jump
         if (canJump)
         {
-            //			rb.AddForce (0, jumpForce, 0);
+          //rb.AddForce (0, jumpForce, 0);
             rb.velocity += 75f * Vector3.up;
             canJump = false;
         }
@@ -224,7 +243,7 @@ public class Player2 : MonoBehaviour
         //Gravity
         if (isGrounded == false)
         {
-            rb.velocity += 5f * Vector3.down;
+            rb.velocity += 4f * Vector3.down;
         }
 
         //Slows player down when not pressing direction
@@ -240,13 +259,11 @@ public class Player2 : MonoBehaviour
             }
         }
 
-        if (shoot && shot < 2)
+        if (shoot && shot < 1)
         {
-            shot++;
             //Calls Projectile Prefab
             GameObject projectileInstance = Instantiate(projectile, transform.position, Quaternion.identity) as GameObject;
             Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody>();
-            nextFire = Time.time + fireRate;
             if (faceLeft)
             {
                 projectileRb.velocity += 150f * Vector3.left;
@@ -255,6 +272,11 @@ public class Player2 : MonoBehaviour
             {
                 projectileRb.velocity += 150f * Vector3.right;
             }
+        }
+
+        if (flying && isGrounded == false)
+        {
+            rb.AddForce(0, 250, 0);
         }
     }
 }

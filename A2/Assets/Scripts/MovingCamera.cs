@@ -9,12 +9,15 @@ public class MovingCamera : MonoBehaviour
     public GameObject player;
     private Vector3 offset;
     public Rigidbody rb;
+    public Rigidbody camRb;
+    public bool follow;
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Death Plane")
+        if (other.tag == "Finish")
         {
-            rb.constraints = RigidbodyConstraints.FreezePositionY;
+            follow = false;
+            camRb.constraints = RigidbodyConstraints.FreezePositionY;
         }
     }
 
@@ -26,19 +29,27 @@ public class MovingCamera : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        follow = true;
         offset = transform.position - player.transform.position;
-        
     }
 
     // Update is called once per frame
     void Update()
+    {
+        if (follow)
+        {
+            transform.position = player.transform.position + offset;
+        }
+    }
+
+    void FixedUpdate()
     {
         
     }
 
     void LateUpdate()
     {
-        transform.position = player.transform.position + offset;
+        
     }
 
     
