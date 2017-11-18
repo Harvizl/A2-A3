@@ -20,7 +20,6 @@ public class Player2 : MonoBehaviour
     public bool walkRight;
     public bool canSprintLeft;
     public bool canSprintRight;
-    public bool detectPlayer;
 
     public float flyLift = 100f;
     public float flyBuffDuration = 5;
@@ -59,7 +58,8 @@ public class Player2 : MonoBehaviour
 
     void SpawnEnemy2()
     {
-        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(336, 18, 0), Quaternion.identity) as GameObject;
+        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(336, 18, 0), Quaternion.identity);
+        SpawnEnemy2.GetComponent<Enemy2>().scanning = true;
     }
 
     void OnCollisionEnter(Collision other)
@@ -85,7 +85,6 @@ public class Player2 : MonoBehaviour
             canShoot = true;
             GameManager.instance.score = GameManager.instance.score + 10;
             other.gameObject.SetActive(false);
-            detectPlayer = true;
             SpawnEnemy2();
         }
 
@@ -180,14 +179,6 @@ public class Player2 : MonoBehaviour
     void FixedUpdate()
     {
         isGrounded = IsGrounded();
-
-        if (detectPlayer)
-        {
-            //Enemy2 = gameObjectEnemy2.GetComponent<Enemy2>() as Enemy2;
-            Enemy2.scanning += 1;
-        }
-
-
 
         //Jump
         if (canJump)

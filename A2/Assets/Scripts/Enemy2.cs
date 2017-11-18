@@ -18,13 +18,12 @@ public class Enemy2 : MonoBehaviour
     public SphereCollider col;
     
     public float playerDistance;
-    public static int scanning;
     public bool playerSpotted;
     public bool patrolling;
     public bool backToPatrolling;
     Vector3 originalPosition;
 
-
+    public bool scanning;
 
     void Awake()
     {
@@ -85,11 +84,6 @@ public class Enemy2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        
-
-
-
     }
 
     void Detector()
@@ -108,13 +102,13 @@ public class Enemy2 : MonoBehaviour
 
         if (playerSpotted)
         {
-            scanning -= 1;
+            scanning = false;
             patrolling = false;
             ChasePlayer();
             EnemyAttack();
         }
 
-        if (scanning == 1)
+        if (scanning)
         {
             RaycastHit hit;
 
