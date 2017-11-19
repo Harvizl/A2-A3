@@ -47,6 +47,12 @@ public class Player : MonoBehaviour
     //If items or goal is touched
     void OnTriggerEnter(Collider other)
     {
+        if (other.tag == "Coins")
+        {
+            print("Real Money Please");
+            Destroy(other.gameObject);
+            GameManager.instance.score = GameManager.instance.score + 10;
+        }
         if (other.tag == "Fly Buff")
         {
             canFly = true;
@@ -74,6 +80,7 @@ public class Player : MonoBehaviour
             print("You Fell");
             StartCoroutine(DeathByFall());
         }
+        
         if (other.tag == "Ground")
         {
             rb.constraints = RigidbodyConstraints.FreezePositionY;
@@ -82,6 +89,7 @@ public class Player : MonoBehaviour
             rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY |
                 RigidbodyConstraints.FreezeRotationZ;
     }
+
 
     void OnTriggerExit(Collider other)
     {

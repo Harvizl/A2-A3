@@ -26,10 +26,13 @@ public class Enemy : MonoBehaviour
         return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
     }
 
+        void Awake()
+    {
+        gameObject.SetActive(true);
+    }
 
-    
 
-    
+
 
     //Use this for initialization
     void Start()

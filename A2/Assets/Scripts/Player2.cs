@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Player2 : MonoBehaviour
 {
+    public bool pause;
     public bool faceLeft;
     public bool faceRight;
     public bool aimUp;
@@ -56,8 +57,8 @@ public class Player2 : MonoBehaviour
 
     void SpawnEnemy2()
     {
-        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(345, 60, 0), Quaternion.identity);
-        SpawnEnemy2.GetComponent<Enemy2>().scanning = true;
+        GameObject SpawnEnemy2 = Instantiate(gameObjectEnemy2, new Vector3(340, 35, 0), Quaternion.identity);
+        SpawnEnemy2.GetComponent<Enemy2>().patrolling = true;
     }
 
     void SpawnLift()
@@ -67,7 +68,12 @@ public class Player2 : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        
+        if (other.gameObject.tag == "Enemy")
+        {
+            Time.timeScale = 0;
+            print("Game Over");
+            //Load game over screen
+        }
     }
 
     //If items or goal is touched
@@ -93,15 +99,15 @@ public class Player2 : MonoBehaviour
 
         if (other.tag == "Goal")
         {
-            print("You Win!");
+            //print("You Win!");
             GameManager.instance.score += 500;
             SceneManager.LoadScene(2);
         }
         if (other.tag == "Death Plane")
         {
-            print("You Fell");
+            //print("You Fell");
             StartCoroutine(DeathByFall());
-            
+
         }
         if (other.tag == "Ground")
         {
@@ -111,12 +117,7 @@ public class Player2 : MonoBehaviour
             rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY |
                 RigidbodyConstraints.FreezeRotationZ;
 
-        if (other.gameObject.tag == "Enemy")
-        {
-            //Time.timeScale = 0;
-            print("Game Over");
-            //Load game over screen
-        }
+        
 
         if (other.gameObject.tag == "Key")
         {
@@ -124,7 +125,15 @@ public class Player2 : MonoBehaviour
             SpawnLift();
             other.gameObject.SetActive(false);
         }
+        if (other.tag == "Coin")
+        {
+            print("Real Money Please");
+            Destroy(other.gameObject);
+            GameManager.instance.score = GameManager.instance.score + 10;
+        }
     }
+
+    
 
     // Use this for initialization
     void Start()
@@ -146,6 +155,40 @@ public class Player2 : MonoBehaviour
         canSprintRight = false;
         walkLeft = false;
         walkRight = false;
+
+        flyTimer -= Time.deltaTime;
+        if (flyTimer < 0)
+        {
+            canFly = false;
+        }
+
+        RaycastHit stomp;
+        {
+            if (Physics.Raycast(transform.position, Vector3.down, out stomp, distToGround + 0.1f))
+            {
+                if (stomp.collider.tag == "Enemy")
+                {
+                    print("stomped");
+                    GameManager.instance.score = GameManager.instance.score + 50;
+                    Destroy(stomp.transform.gameObject);
+                    if (Input.GetKey(KeyCode.Space))
+                    {
+                        print("Boost");
+                        rb.velocity += 120f * Vector3.up;
+                    }
+                }
+            }
+        }
+
+        if (Input.GetKeyUp(KeyCode.P))
+        {
+            pause = true;
+        }
+        if (Time.timeScale == 0 && Input.GetKeyUp(KeyCode.P))
+        {
+            Time.timeScale = 1;
+            pause = false;
+        }
 
         //Speed Limit
         if (Input.GetKey(KeyCode.A))
@@ -183,8 +226,8 @@ public class Player2 : MonoBehaviour
         {
             shoot = false;
         }
-        
-        if(Input.GetKey(KeyCode.Space) && canFly)
+
+        if (Input.GetKey(KeyCode.Space) && canFly)
         {
             flying = true;
         }
@@ -199,10 +242,16 @@ public class Player2 : MonoBehaviour
     {
         isGrounded = IsGrounded();
 
+        if (pause)
+        {
+            Time.timeScale = 0;
+        }
+        
+
         //Jump
         if (canJump)
         {
-          //rb.AddForce (0, jumpForce, 0);
+            //rb.AddForce (0, jumpForce, 0);
             rb.velocity += 75f * Vector3.up;
             canJump = false;
         }

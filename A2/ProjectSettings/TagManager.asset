@@ -15,6 +15,7 @@ TagManager:
   - Wall
   - Key
   - Goal
+  - Coin
   layers:
   - Default
   - TransparentFX

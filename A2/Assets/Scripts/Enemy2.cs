@@ -30,6 +30,7 @@ public class Enemy2 : MonoBehaviour
     {
         playerTarget = GameObject.FindGameObjectWithTag("Player");
         Vector3 originalPosition = rb.transform.position;
+        gameObject.SetActive(true);
     }
 
     void OnTriggerStay(Collider other)
@@ -46,7 +47,7 @@ public class Enemy2 : MonoBehaviour
     {
         if (enemyShot < 1)
         {
-            Debug.Log("Player in Sight");
+            //Debug.Log("Player in Sight");
             enemyShot++;
             //Spawns enemy bullet
             GameObject projectileInstance = Instantiate(projectile, transform.position, transform.rotation);
@@ -56,7 +57,7 @@ public class Enemy2 : MonoBehaviour
             //Direction of bullet
             projectileRb.velocity = Vector3.Lerp(projectileRb.transform.position, playerPosition, 1f);
             //Stuff happens that makes the enemy chase the player
-            Debug.Log("Player Missed");
+            //Debug.Log("Player Missed");
         }
     }
 
@@ -69,6 +70,28 @@ public class Enemy2 : MonoBehaviour
     {
        
         rb.MovePosition(new Vector3(originalX + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), originalY + amplitude * Mathf.Sin(frequency * 1f * Mathf.PI * Time.time), transform.position.z));
+
+        RaycastHit patrol;
+
+        if (Physics.Raycast(rb.position, -Vector3.up + -Vector3.right, out patrol, 200f))
+        {
+            Debug.DrawLine(rb.position, patrol.point, Color.red);
+            if (patrol.collider.tag == "Player")
+            {
+                //print("Found an object - distance: " + patrol.distance);
+                playerSpotted = true;
+            }
+        }
+
+        if (Physics.Raycast(rb.position, -Vector3.up + Vector3.right, out patrol, 200f))
+        {
+            Debug.DrawLine(rb.position, patrol.point, Color.yellow);
+            if (patrol.collider.tag == "Player")
+            {
+                //print("Found an object - distance: " + patrol.distance);
+                playerSpotted = true;
+            }
+        }
     }
 
     
@@ -109,7 +132,7 @@ public class Enemy2 : MonoBehaviour
           //EnemyAttack();
         }
 
-        if (scanning)
+        /*if (scanning)
         {
             RaycastHit hit;
 
@@ -122,7 +145,7 @@ public class Enemy2 : MonoBehaviour
                     playerSpotted = true;
                 }
             }
-        }
+        }*/
 
     }
 }
