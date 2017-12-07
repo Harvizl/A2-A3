@@ -19,5 +19,6 @@ public class AudioManager : MonoBehaviour {
 	void Awake ()
 	{
 		DontDestroyOnLoad(transform.gameObject);
+        Cursor.visible = false;
 	}
 }

@@ -33,7 +33,9 @@ public class Player2 : MonoBehaviour
 	float distToGround;
 
 	public Rigidbody rb;
-	public GameObject pauseScreen;
+    public GameObject pauseScreen;
+	public GameObject resumeButton;
+    public GameObject optionsButton;
 	public GameObject restartButton;
 	public GameObject quitButton;
 	public GameObject lift;
@@ -86,6 +88,14 @@ public class Player2 : MonoBehaviour
 	{
 		GameObject SpawnLift = Instantiate (lift, new Vector3 (76, 50, 0), Quaternion.identity);
 	}
+
+    public void unPause()
+    {
+        Time.timeScale = 1;
+        pause = false;
+        audioManager.Play();
+        pauseScreen.gameObject.SetActive(false);
+    }
 
 	void OnCollisionEnter (Collision other)
 	{
@@ -220,21 +230,19 @@ public class Player2 : MonoBehaviour
 //			}
 //		}
 
-		if (Input.GetKeyUp (KeyCode.P)) {
+		if (Input.GetKeyUp (KeyCode.Backspace)) {
 			pause = true;
 			pauseScreen.gameObject.SetActive (true);
 			audioManager.Pause ();
-			restartButton.gameObject.SetActive (true);
-			quitButton.gameObject.SetActive (true);
-		}
-		if (Time.timeScale == 0 && Input.GetKeyUp (KeyCode.P)) {
+        }
+
+        
+		/*if (Time.timeScale == 0 && Input.GetKeyUp (KeyCode.Backspace)) {
 			Time.timeScale = 1;
 			pause = false;
 			pauseScreen.gameObject.SetActive (false);
-			audioManager.Play ();
-			restartButton.gameObject.SetActive (false);
-			quitButton.gameObject.SetActive (false);
-		}
+			audioManager.Play ();			
+		}*/
 
 		//Speed Limit
 		if (Input.GetKey (KeyCode.A)) {
