@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
+
+
 public class Menu : MonoBehaviour {
 
     public AudioMixer audioMixer;
@@ -62,7 +64,7 @@ public class Menu : MonoBehaviour {
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 0);
-        //audioManager.Play();
+        audioManager.Play();
     }
 
     public void SetVolume (float volume)

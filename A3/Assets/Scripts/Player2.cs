@@ -33,6 +33,7 @@ public class Player2 : MonoBehaviour
 	float distToGround;
 
 	public Rigidbody rb;
+    public GameObject gameOverScreen;
     public GameObject pauseScreen;
 	public GameObject resumeButton;
     public GameObject optionsButton;
@@ -49,12 +50,16 @@ public class Player2 : MonoBehaviour
 	public int shot = 0;
 	public int flyBuffDUration = 5;
 
+	public AudioClip hit;
 	public AudioClip coin;
+	public AudioClip fire;
 	public AudioClip jump;
 	public AudioClip jumpOn;
-	public AudioClip fire;
-	AudioManager audioManager;
+	public AudioClip sound;
+	public AudioClip gameOverBGM;
 
+	//public AudioManager audioManager;
+	public AudioSource audioManager { get { return GetComponent<AudioSource>(); } }
 
 
 	bool IsGrounded ()
@@ -73,9 +78,7 @@ public class Player2 : MonoBehaviour
 	{
 		yield return new WaitForSeconds (2);
 		Time.timeScale = 0;
-		//gameOver.gameObject.SetActive (true);
-		restartButton.gameObject.SetActive (true);
-		quitButton.gameObject.SetActive (true);
+        gameOverScreen.gameObject.SetActive(true);
 	}
 
 	void SpawnEnemy2 ()
@@ -102,13 +105,19 @@ public class Player2 : MonoBehaviour
 		if (other.gameObject.tag == "Enemy") {
 			gameObject.SetActive (false);
 			Time.timeScale = 0;
-			restartButton.gameObject.SetActive (true);
-			quitButton.gameObject.SetActive (true);
+			pauseScreen.gameObject.SetActive(true);
+			//StartCoroutine
 			//print("Game Over");
 			//Load game over screen
 		}
 	}
 
+	IEnumerator DeathMusic()
+	{
+		audioManager.Stop ();
+		yield return new WaitForSeconds (.5f);
+		audioManager.PlayOneShot (gameOverBGM);
+	}
 	//If items or goal is touched
 	void OnTriggerEnter (Collider other)
 	{
@@ -157,7 +166,7 @@ public class Player2 : MonoBehaviour
 		if (other.tag == "Coin") {
 			print ("Real Money Please");
 			AudioSource audio = GetComponent<AudioSource> ();
-			audio.PlayOneShot (coin);
+			audioManager.PlayOneShot (coin);
 			Destroy (other.gameObject);
 			GameManager.instance.score = GameManager.instance.score + 10;
 		}
@@ -173,10 +182,11 @@ public class Player2 : MonoBehaviour
 		canShoot = false;
 		Time.timeScale = 1;
 		distToGround = 0.5f * transform.localScale.y;
-		GameObject bgmGo = GameObject.FindGameObjectWithTag ("BGM");
+
+		/*GameObject bgmGo = GameObject.FindGameObjectWithTag ("BGM");
 		if (bgmGo != null) {
 			audioManager = bgmGo.GetComponent<AudioManager>();
-		}
+		}*/
 	}
 
 	// Update is called once per frame
@@ -297,7 +307,7 @@ public class Player2 : MonoBehaviour
 			//rb.AddForce (0, jumpForce, 0);
 			rb.velocity += 75f * Vector3.up;
 			AudioSource audio = GetComponent<AudioSource> ();
-			audio.PlayOneShot (jump);
+			audioManager.PlayOneShot (jump);
 			canJump = false;
 		}
 
@@ -352,7 +362,7 @@ public class Player2 : MonoBehaviour
 			projectileInstance.GetComponent<Projectile> ().player = this;
 			Rigidbody projectileRb = projectileInstance.GetComponent<Rigidbody> ();
 			AudioSource audio = GetComponent<AudioSource> ();
-			audio.PlayOneShot (fire);
+			audioManager.PlayOneShot (fire);
 			if (faceLeft) {
 				projectileRb.velocity += 150f * Vector3.left;
 			} else if (faceRight) {

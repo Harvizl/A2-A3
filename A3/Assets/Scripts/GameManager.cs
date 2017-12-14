@@ -12,9 +12,7 @@ public class GameManager : Singleton<GameManager>
 
     public Text scoreText;
     public int score;
-
-	public GameObject restartButton;
-	public GameObject quitButton;
+    
 
     // Use this for initialization
     void Start()
@@ -45,8 +43,8 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log ("Time's up!");
             Time.timeScale = 0;
-			restartButton.gameObject.SetActive (true);
-			quitButton.gameObject.SetActive (true);
+            //Call time's up
+			//GameObject timesUpScreen = GetComponent<>
         }
 	}
 
