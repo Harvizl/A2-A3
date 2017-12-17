@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
+    public GameObject gameOverMenu;
 
     public Text timeText;
     public int gameLength;
@@ -21,7 +22,7 @@ public class GameManager : Singleton<GameManager>
     }
 	void Awake()
 	{
-		InvokeRepeating("Updatescore", 0, 1);
+        InvokeRepeating("Updatescore", 0, 1);
 		gameLength = 300;
 	}
 
@@ -43,6 +44,8 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log ("Time's up!");
             Time.timeScale = 0;
+            gameOverMenu.SetActive (true);
+
             //Call time's up
 			//GameObject timesUpScreen = GetComponent<>
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player2 : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class Player2 : MonoBehaviour
 	public Rigidbody rb;
     public GameObject gameOverScreen;
     public GameObject pauseScreen;
+    public GameObject goRestartButton;
 	public GameObject resumeButton;
     public GameObject optionsButton;
 	public GameObject restartButton;
@@ -57,12 +59,12 @@ public class Player2 : MonoBehaviour
 	public AudioClip jumpOn;
 	public AudioClip sound;
 	public AudioClip gameOverBGM;
-
 	//public AudioManager audioManager;
 	public AudioSource audioManager { get { return GetComponent<AudioSource>(); } }
 
+    public Button goRestart;
 
-	bool IsGrounded ()
+    bool IsGrounded ()
 	{
 		RaycastHit hit;
 		if (Physics.Raycast (transform.position, -Vector3.up, out hit, distToGround + 0.1f)) {
@@ -76,12 +78,25 @@ public class Player2 : MonoBehaviour
 
 	IEnumerator DeathByFall ()
 	{
-		yield return new WaitForSeconds (2);
-		Time.timeScale = 0;
+        yield return new WaitForSeconds(0);
+        GameObject bgm = GameObject.FindGameObjectWithTag("BGM");
+        bgm.SetActive(false);
+		audioManager.PlayOneShot(gameOverBGM);
+        yield return new WaitForSeconds(.5f);
+        Time.timeScale = 0;
         gameOverScreen.gameObject.SetActive(true);
-	}
+        Cursor.visible = true;
 
-	void SpawnEnemy2 ()
+    }
+
+    IEnumerator DeathMusic()
+    {
+        yield return new WaitForSeconds(0);
+        
+        audioManager.PlayOneShot(gameOverBGM);
+    }
+
+    void SpawnEnemy2 ()
 	{
 		GameObject SpawnEnemy2 = Instantiate (gameObjectEnemy2, new Vector3 (340, 35, 0), Quaternion.identity);
 		SpawnEnemy2.GetComponent<Enemy2> ().patrolling = true;
@@ -100,24 +115,26 @@ public class Player2 : MonoBehaviour
         pauseScreen.gameObject.SetActive(false);
     }
 
-	void OnCollisionEnter (Collision other)
-	{
-		if (other.gameObject.tag == "Enemy") {
-			gameObject.SetActive (false);
-			Time.timeScale = 0;
-			pauseScreen.gameObject.SetActive(true);
-			//StartCoroutine
-			//print("Game Over");
-			//Load game over screen
-		}
-	}
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            Time.timeScale = 0;
+            gameOverScreen.gameObject.SetActive(true);
+            Cursor.visible = true;
+            GameObject bgm = GameObject.FindGameObjectWithTag("BGM");
+            bgm.SetActive(false);
+            StartCoroutine(DeathMusic());
+            //StartCoroutine
+            //print("Game Over");
+            //Load game over screen
+        }
+        else
 
-	IEnumerator DeathMusic()
-	{
-		audioManager.Stop ();
-		yield return new WaitForSeconds (.5f);
-		audioManager.PlayOneShot (gameOverBGM);
-	}
+            Cursor.visible = false;
+    }
+        
+	
 	//If items or goal is touched
 	void OnTriggerEnter (Collider other)
 	{
@@ -142,14 +159,18 @@ public class Player2 : MonoBehaviour
 			GameObject bgm = GameObject.FindGameObjectWithTag ("BGM");
 			bgm.SetActive (false);
 			GameManager.instance.score += 500;
-			SceneManager.LoadScene (2);
-		}
-		if (other.tag == "Death Plane") {
+            gameOverScreen.gameObject.SetActive(true);
+            Cursor.visible = true;
+        }
+        else
+            Cursor.visible = false;
+
+        if (other.tag == "Death Plane") {
 			//print("You Fell");
 			StartCoroutine (DeathByFall());
 
 
-		}
+        }
 		if (other.tag == "Ground") {
 			rb.constraints = RigidbodyConstraints.FreezePositionY;
 		} else
@@ -174,10 +195,14 @@ public class Player2 : MonoBehaviour
 
 	}
 
+    void Awake()
+    {
+        Cursor.visible = false;
+    }
 
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
 	{
 		canShoot = false;
 		Time.timeScale = 1;
@@ -194,6 +219,11 @@ public class Player2 : MonoBehaviour
 	{
 		//Gravity
 		//rb.AddForce(0, -60f, 0);
+
+        if (gameOverScreen == true)
+        {
+            goRestart.Select();
+        }
 
 		if (onAPlatform) {
 

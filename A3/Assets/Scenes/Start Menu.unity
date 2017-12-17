@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1930,17 +1930,6 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 373955700}
         m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1677197471}
-        m_MethodName: PlaySound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5324,6 +5313,7 @@ MonoBehaviour:
   fire: {fileID: 8300000, guid: c5afa832f76ac6a4b92d509f20133dfe, type: 3}
   hit: {fileID: 8300000, guid: 8b7d7635ada36f74aa68006f68558b18, type: 3}
   pop: {fileID: 8300000, guid: cb0d7790813451c40a0c0a7bfebcc73b, type: 3}
+  gameOverBGM: {fileID: 8300000, guid: 1d8ba434b0b39c0498fe964215b91a3c, type: 3}
 --- !u!1 &1729178021
 GameObject:
   m_ObjectHideFlags: 0

@@ -64,7 +64,7 @@ public class Menu : MonoBehaviour {
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 0);
-        audioManager.Play();
+        audioManager.Stop();
     }
 
     public void SetVolume (float volume)
